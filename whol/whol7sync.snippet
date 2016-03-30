@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+      </SnippetTypes>
+      <Title>whol7sync</Title>
+      <Author>Microsoft Corp.</Author>
+      <Description>
+      </Description>
+      <HelpUrl>
+      </HelpUrl>
+      <Shortcut>whol7sync</Shortcut>
+    </Header>
+    <Snippet>
+      <Code Language="csharp" Delimiter="$"><![CDATA[String errorString = null;
+		  
+try
+{
+	await App.MobileService.SyncContext.PushAsync();
+	// first param is query ID, used for incremental sync
+await todoTable.PullAsync("todoItems", todoTable.CreateQuery()); 
+}
+		  
+catch (MobileServicePushFailedException ex)
+{
+	errorString = "Push failed because of sync errors. " +
+		        "You may be offine.\nMessage: " +
+		        ex.Message + "\nPushResult.Status: " + 
+		        ex.PushResult.Status.ToString();
+}
+catch (Exception ex)
+{
+	errorString = "Pull failed: " + ex.Message +
+	"\n\nIf you are still in an offline scenario, " +
+	"you can try your Pull again when connected with " + 
+	"your Mobile Service.";
+}
+		  
+if (errorString != null)
+{
+	MessageDialog d = new MessageDialog(errorString);
+	await d.ShowAsync();
+}
+]]></Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

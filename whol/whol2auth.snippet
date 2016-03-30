@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+      </SnippetTypes>
+      <Title>whol2auth</Title>
+      <Author>Microsoft Corp.</Author>
+      <Description>
+      </Description>
+      <HelpUrl>
+      </HelpUrl>
+      <Shortcut>whol2auth</Shortcut>
+    </Header>
+    <Snippet>
+      <Code Language="csharp" Delimiter="$"><![CDATA[// Define a method that performs the authentication process
+// using Facebook sign-in. 
+private async System.Threading.Tasks.Task AuthenticateAsync()
+{
+	while (user == null)
+	{
+	    string message;
+	    // This sample uses the Facebook provider.
+	    var provider = "Facebook";
+	 
+	    try
+	    {
+	        // Sign-in using Facebook authentication.
+	        user = await App.MobileService.LoginAsync(provider);
+	        message = string.Format("You are now signed in - {0}", user.UserId);
+            MessageDialog d = new MessageDialog(message);
+            await d.ShowAsync();
+
+	    }
+	    catch (InvalidOperationException)
+	    {
+	        message = "You must log in. Login Required";
+	    }
+	 
+	    var dialog = new MessageDialog(message);
+	    dialog.Commands.Add(new UICommand("OK"));
+	    await dialog.ShowAsync();
+	}
+}]]></Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

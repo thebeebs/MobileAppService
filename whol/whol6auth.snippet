@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+      </SnippetTypes>
+      <Title>whol6auth</Title>
+      <Author>Microsoft Corp.</Author>
+      <Description>
+      </Description>
+      <HelpUrl>
+      </HelpUrl>
+      <Shortcut>whol6auth</Shortcut>
+    </Header>
+    <Snippet>
+      <Code Language="csharp" Delimiter="$"><![CDATA[private async System.Threading.Tasks.Task AuthenticateAsync()
+{
+	string message = string.Empty;
+	// This sample uses the Azure Active Directory provider.
+	var provider = "AAD";
+	 
+	// Use the PasswordVault to securely store and access credentials.
+	PasswordVault vault = new PasswordVault();
+	PasswordCredential credential = null;
+	 
+	while (credential == null)
+	{
+	    try
+	    {
+	        // Try to get an existing credential from the vault.
+	        credential = vault.FindAllByResource(provider).FirstOrDefault();
+	    }
+	    catch (Exception)
+	    {
+	        // When no matching resource an error occurs, which we ignore.
+	    }
+	 
+	    if (credential != null)
+	    {
+	        // Create a user from the stored credentials.
+	        user = new MobileServiceUser(credential.UserName);
+	        credential.RetrievePassword();
+	        user.MobileServiceAuthenticationToken = credential.Password;
+	 
+	        // Set the user from the stored credentials.
+	        App.MobileService.CurrentUser = user;
+	 
+	        try
+	        {
+	            // Try to return an item now to determine if the 
+	            // cached credential has expired.
+	            await App.MobileService.GetTable<TodoItem>().Take(1)
+	                    .ToListAsync();
+	        }
+	        catch (MobileServiceInvalidOperationException ex)
+	        {
+	            if (ex.Response.StatusCode == 
+	                    System.Net.HttpStatusCode.Unauthorized)
+	            {
+	                // Remove the credential with the expired token.
+	                vault.Remove(credential);
+	                credential = null;
+	                continue;
+	            }
+	        }
+	    }
+	    else
+	    {
+	        try
+	        {
+	            // Login with the identity provider.
+	            user = await App.MobileService
+	                .LoginAsync(provider);
+	 
+	            // Create and store the user credentials.
+	            credential = new PasswordCredential(provider,
+	                user.UserId, user.MobileServiceAuthenticationToken);
+	            vault.Add(credential);
+	        } 
+	    catch (InvalidOperationException)
+	    {
+	        message = "You must log in. Login Required";
+	    }
+	 
+	    var dialog = new MessageDialog(message);
+	    dialog.Commands.Add(new UICommand("OK"));
+	    await dialog.ShowAsync();
+	}
+}]]></Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>
