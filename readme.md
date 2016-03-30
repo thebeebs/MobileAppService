@@ -47,7 +47,8 @@ This exercise shows you how to add offline support to a UWP app using an Azure M
     private IMobileServiceSyncTable<TodoItem> todoTable = App.MobileService.GetSyncTable<TodoItem>()
 
 ## Add the following function InitLocalStoreAsync this initialises the offline store. 
-Snippet: wholInitStore
+###Snippet: wholInitStore
+    
     private async Task InitLocalStoreAsync(){
         if (!App.MobileService.SyncContext.IsInitialized)
         {
